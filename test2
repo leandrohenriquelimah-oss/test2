@@ -1,0 +1,267 @@
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "AutoJoin"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local blur = Instance.new("BlurEffect")
+blur.Size = 0
+blur.Parent = game:GetService("Lighting")
+
+local depthOfField = Instance.new("DepthOfFieldEffect")
+depthOfField.FarIntensity = 0
+depthOfField.FocusDistance = 25
+depthOfField.InFocusRadius = 15
+depthOfField.NearIntensity = 0.5
+depthOfField.Parent = game:GetService("Lighting")
+
+game:GetService("TweenService"):Create(blur, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = 20}):Play()
+game:GetService("TweenService"):Create(depthOfField, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {FarIntensity = 0.3, NearIntensity = 0.8}):Play()
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 420, 0, 400)
+frame.Position = UDim2.new(0.5, -210, 0.5, -200)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+frame.BackgroundTransparency = 0.45
+frame.BorderSizePixel = 0
+frame.ClipsDescendants = true
+frame.Parent = gui
+
+local glass = Instance.new("Frame")
+glass.Size = UDim2.new(1,0,1,0)
+glass.BackgroundTransparency = 0.7
+glass.BackgroundColor3 = Color3.fromRGB(255,255,255)
+glass.BorderSizePixel = 0
+glass.Parent = frame
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(180,180,255))
+}
+gradient.Rotation = 90
+gradient.Transparency = NumberSequence.new{
+    NumberSequenceKeypoint.new(0, 0.85),
+    NumberSequenceKeypoint.new(1, 0.95)
+}
+gradient.Parent = glass
+
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 20)
+Instance.new("UICorner", glass).CornerRadius = UDim.new(0, 20)
+
+local stroke = Instance.new("UIStroke")
+stroke.Thickness = 1.5
+stroke.Color = Color3.fromRGB(100, 150, 255)
+stroke.Transparency = 0.6
+stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+stroke.Parent = frame
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, -160, 0, 60)
+title.Position = UDim2.new(0, 20, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "issei UI AutoJoin"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 32
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+local titleGrad = Instance.new("UIGradient")
+titleGrad.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 200, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(180, 120, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 150, 255))
+}
+titleGrad.Parent = title
+
+local version = Instance.new("TextLabel", frame)
+version.Size = UDim2.new(0, 100, 0, 30)
+version.Position = UDim2.new(0, 22, 0, 35)
+version.BackgroundTransparency = 1
+version.Text = "v1.1"
+version.TextColor3 = Color3.fromRGB(150, 200, 255)
+version.Font = Enum.Font.Gotham
+version.TextSize = 16
+version.TextXAlignment = Enum.TextXAlignment.Left
+
+local hideBtn = Instance.new("TextButton", frame)
+hideBtn.Size = UDim2.new(0, 42, 0, 42)
+hideBtn.Position = UDim2.new(1, -92, 0, 12)
+hideBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 100)
+hideBtn.Text = "−"
+hideBtn.TextColor3 = Color3.new(1,1,1)
+hideBtn.Font = Enum.Font.GothamBold
+hideBtn.TextSize = 36
+hideBtn.AutoButtonColor = false
+Instance.new("UICorner", hideBtn).CornerRadius = UDim.new(0, 12)
+Instance.new("UIStroke", hideBtn).Color = Color3.fromRGB(120,120,180)
+
+local closeBtn = Instance.new("TextButton", frame)
+closeBtn.Size = UDim2.new(0, 42, 0, 42)
+closeBtn.Position = UDim2.new(1, -46, 0, 12)
+closeBtn.BackgroundColor3 = Color3.fromRGB(220, 60, 80)
+closeBtn.Text = "×"
+closeBtn.TextColor3 = Color3.new(1,1,1)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 30
+closeBtn.AutoButtonColor = false
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 12)
+
+local jobBox = Instance.new("TextBox", frame)
+jobBox.Size = UDim2.new(1,-40,0,90)
+jobBox.Position = UDim2.new(0,20,0,80)
+jobBox.BackgroundColor3 = Color3.fromRGB(30,30,50)
+jobBox.BackgroundTransparency = 0.4
+jobBox.PlaceholderText = "Cole o Job ID aqui..."
+jobBox.PlaceholderColor3 = Color3.fromRGB(120,120,160)
+jobBox.Text = ""
+jobBox.TextColor3 = Color3.new(1,1,1)
+jobBox.Font = Enum.Font.Gotham
+jobBox.TextSize = 20
+jobBox.TextWrapped = true
+jobBox.ClearTextOnFocus = false
+Instance.new("UICorner", jobBox).CornerRadius = UDim.new(0,14)
+local jobStroke = Instance.new("UIStroke", jobBox)
+jobStroke.Color = Color3.fromRGB(100,140,255)
+jobStroke.Transparency = 0.5
+
+local status = Instance.new("TextLabel", frame)
+status.Size = UDim2.new(1,-40,0,45)
+status.Position = UDim2.new(0,20,0,180)
+status.BackgroundTransparency = 1
+status.Text = "Pronto - Intervalo: 500ms"
+status.TextColor3 = Color3.fromRGB(100,255,150)
+status.Font = Enum.Font.GothamBold
+status.TextSize = 22
+
+local turboBtn = Instance.new("TextButton", frame)
+turboBtn.Size = UDim2.new(1,-40,0,100)
+turboBtn.Position = UDim2.new(0,20,0,240)
+turboBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+turboBtn.Text = "OFF"
+turboBtn.TextColor3 = Color3.new(1,1,1)
+turboBtn.Font = Enum.Font.GothamBlack
+turboBtn.TextSize = 56
+turboBtn.AutoButtonColor = false
+Instance.new("UICorner", turboBtn).CornerRadius = UDim.new(0,20)
+local turboStroke = Instance.new("UIStroke", turboBtn)
+turboStroke.Thickness = 3
+turboStroke.Color = Color3.fromRGB(255,100,100)
+
+local counter = Instance.new("TextLabel", frame)
+counter.Size = UDim2.new(1,-40,0,35)
+counter.Position = UDim2.new(0,20,0,350)
+counter.BackgroundTransparency = 1
+counter.Text = "Tentativas: 0"
+counter.TextColor3 = Color3.fromRGB(180,180,220)
+counter.Font = Enum.Font.GothamSemibold
+counter.TextSize = 18
+
+local dragging = false
+local dragStart, startPos
+
+title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+    end
+end)
+
+title.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+game:GetService("UserInputService").InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+local hidden = false
+local function toggleHide()
+    hidden = not hidden
+    frame.Visible = not hidden
+    hideBtn.Text = hidden and "+" or "−"
+    if not hidden then
+        game:GetService("TweenService"):Create(blur, TweenInfo.new(0.5), {Size = 20}):Play()
+    else
+        game:GetService("TweenService"):Create(blur, TweenInfo.new(0.4), {Size = 0}):Play()
+    end
+end
+
+hideBtn.MouseButton1Click:Connect(toggleHide)
+closeBtn.MouseButton1Click:Connect(function()
+    game:GetService("TweenService"):Create(blur, TweenInfo.new(0.4), {Size = 0}):Play()
+    task.wait(0.4)
+    gui:Destroy()
+end)
+
+game:GetService("ContextActionService"):BindAction("ToggleUI", function(_, state)
+    if state == Enum.UserInputState.Begin then toggleHide() end
+end, false, Enum.KeyCode.LeftControl)
+
+local running = false
+local attempts = 0
+local loopThread = nil
+
+local function getCleanJobId()
+    local t = jobBox.Text or ""
+    t = t:gsub('[%"%\']', ''):gsub("%s+", "")
+    local id = t:match("([0-9a-fA-F%-]+)")
+    return (id and #id == 36) and id or nil
+end
+
+local function teleport()
+    local id = getCleanJobId()
+    if not id then return end
+    attempts += 1
+    counter.Text = "Tentativas: " .. attempts
+    status.Text = "Tentando entrar... ("..attempts..")"
+    status.TextColor3 = Color3.fromRGB(255,200,100)
+    pcall(function()
+        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, id, player)
+    end)
+    task.delay(0.15, function()
+        local sb = game:GetService("ReplicatedStorage"):FindFirstChild("__ServerBrowser")
+        if sb then pcall(function() sb:InvokeServer("teleport", id) end) end
+    end)
+end
+
+turboBtn.MouseButton1Click:Connect(function()
+    running = not running
+    if running then
+        if not getCleanJobId() then
+            status.Text = "Job ID inválido ou vazio!"
+            status.TextColor3 = Color3.fromRGB(255,80,80)
+            running = false
+            return
+        end
+        turboBtn.Text = "ON"
+        turboBtn.BackgroundColor3 = Color3.fromRGB(50,200,80)
+        turboStroke.Color = Color3.fromRGB(100,255,100)
+        status.Text = "AUTOJOIN LIGADO - Forçando entrada..."
+        status.TextColor3 = Color3.fromRGB(100,255,100)
+        loopThread = task.spawn(function()
+            while running do
+                teleport()
+                task.wait(0.5)
+            end
+        end)
+    else
+        turboBtn.Text = "OFF"
+        turboBtn.BackgroundColor3 = Color3.fromRGB(180,50,50)
+        turboStroke.Color = Color3.fromRGB(255,100,100)
+        status.Text = "AutoJoin DESATIVADO"
+        status.TextColor3 = Color3.fromRGB(200,200,200)
+        if loopThread then task.cancel(loopThread) end
+    end
+end)
+
+frame.Position = UDim2.new(0.5, -210, 0.5, -250)
+game:GetService("TweenService"):Create(frame, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -210, 0.5, -200)}):Play()
+
+jobBox:CaptureFocus()
